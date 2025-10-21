@@ -191,8 +191,7 @@ tile_set = SubResource("TileSet_8gbba")
 zoom = Vector2(1.75, 1.75)
 
 [node name="manager" parent="." instance=ExtResource("2_bo1nx")]
-npc_count = 5
-spawn_area = Vector2(300, 300)
+npc_count = 50
 
 [node name="NPCsContainer" type="Node2D" parent="."]
 
