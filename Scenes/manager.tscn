@@ -1,0 +1,8 @@
+[gd_scene load_steps=3 format=3 uid="uid://chmjl8me25a07"]
+
+[ext_resource type="Script" uid="uid://ckqi02xr0mr0g" path="res://Scripts/manager.gd" id="1_voqfu"]
+[ext_resource type="PackedScene" uid="uid://mpkpoq68rb0c" path="res://NPC/NPC.tscn" id="2_wtnv7"]
+
+[node name="manager" type="Node2D"]
+script = ExtResource("1_voqfu")
+npc_scene = ExtResource("2_wtnv7")
