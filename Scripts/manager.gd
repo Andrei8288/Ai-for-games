@@ -35,10 +35,10 @@ func test_options():
 	for npc in npc_container.get_children():
 		var option = npc.get_node("OptionTextOutput")
 		option.duration = 2.0
-		option.cooldown = 0.0
+		option.cooldown = 3.0
 		option.text = "Testing " + npc.name
 		call_deferred("start_test", option)
-		
+
 func start_test(option):
 	option.start()
 	option.pause()

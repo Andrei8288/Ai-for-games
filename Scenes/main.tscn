@@ -1,8 +1,7 @@
-[gd_scene load_steps=7 format=4 uid="uid://buxqurxugnb4c"]
+[gd_scene load_steps=6 format=4 uid="uid://buxqurxugnb4c"]
 
 [ext_resource type="Texture2D" uid="uid://dcce68cdtlcvu" path="res://Assets/Grass.png" id="1_jjgbg"]
 [ext_resource type="PackedScene" uid="uid://chmjl8me25a07" path="res://Scenes/manager.tscn" id="2_bo1nx"]
-[ext_resource type="Script" uid="uid://xys4ct3umfud" path="res://Scripts/RandomAI.gd" id="3_8gbba"]
 
 [sub_resource type="GDScript" id="GDScript_bo1nx"]
 script/source = "extends Node2D
@@ -194,6 +193,3 @@ zoom = Vector2(1.75, 1.75)
 npc_count = 50
 
 [node name="NPCsContainer" type="Node2D" parent="."]
-
-[node name="Node2D" type="Node2D" parent="."]
-script = ExtResource("3_8gbba")
