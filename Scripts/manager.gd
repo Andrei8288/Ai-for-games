@@ -3,14 +3,16 @@ extends Node2D
 
 @export var npc_scene: PackedScene
 @export var npc_count: int
-@export var spawn_area: Vector2 = Vector2(310,310)
+@export var spawn_area: Vector2 = Vector2(300,300)
 @onready var npc_container: Node2D = $"../NPCsContainer"
 @onready var random: RandomAI = $RandomAI
 
 func _ready() -> void:
-	spawn_npc()
-	#spawn_npc_normal_dist()
-	#test_options()
+	if randi()%2 == 1:
+		spawn_npc()
+	else:
+		spawn_npc_normal_dist()
+	test_options()
 
 
 func spawn_npc():
@@ -36,7 +38,7 @@ func test_options():
 		var option = npc.get_node("OptionTextOutput")
 		option.duration = 2.0
 		option.cooldown = 3.0
-		option.text = "Testing " + npc.name
+		option.text = npc.name
 		call_deferred("start_test", option)
 
 func start_test(option):

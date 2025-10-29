@@ -31,8 +31,9 @@ func stop() -> void:
 		emit_signal("stopped")
 
 func pause() -> void:
-	if is_active and not is_paused:
+	if is_active:
 		is_paused = true
+		is_active = false
 		emit_signal("paused")
 
 func is_on_cooldown() -> bool:

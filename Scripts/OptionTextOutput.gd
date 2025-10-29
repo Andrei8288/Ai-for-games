@@ -9,7 +9,6 @@ func _ready():
 	stopped.connect(Callable(self, "on_option_stopped"))
 	paused.connect(Callable(self, "on_option_paused"))
 
-
 func on_option_started():
 	print("Started ", text)
 func on_option_stoped():
