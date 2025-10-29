@@ -3,23 +3,23 @@ extends Node2D
 
 @export var npc_scene: PackedScene
 @export var npc_count: int
-@export var spawn_area: Vector2 = Vector2(300,300)
-@onready var npc_container: Node2D = $"../NPCsContainer"
+@export var spawn_area: Vector2 = Vector2(310,310)
+@onready var npc_container: Node2D = $%NPCsContainer
 @onready var random: RandomAI = $RandomAI
 
 func _ready() -> void:
-	if randi()%2 == 1:
+	if randi() % 2 == 1:
 		spawn_npc()
 	else:
 		spawn_npc_normal_dist()
-	test_options()
+	#test_options()
 
 
 func spawn_npc():
 	for i in npc_count:
 		var npc = npc_scene.instantiate()
-		var x = random.uniform_int(-spawn_area.x/2,spawn_area.x/2)
-		var y = random.uniform_int(-spawn_area.y/2,spawn_area.y/2)
+		var x = random.uniform_float(-spawn_area.x/2,spawn_area.x/2)
+		var y = random.uniform_float(-spawn_area.y/2,spawn_area.y/2)
 		npc.set_position(Vector2(x, y))
 		npc.name = "NPC" + str(i+1)
 		npc_container.add_child(npc)

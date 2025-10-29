@@ -2,7 +2,8 @@ extends OptionAI
 class_name  OptionTextOutput
 
 @export var text:String = "Option running"
-@onready var option: OptionTextOutput = $"."
+var test:OptionAI
+
 
 func _ready():
 	started.connect(Callable(self, "on_option_started"))
