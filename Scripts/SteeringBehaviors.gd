@@ -1,0 +1,3 @@
+class_name SteeringBehaviors extends CharacterBody2D
+
+var acceleration:Vector2
