@@ -38,16 +38,25 @@ func perlin_1d(x:float) -> float:
 	var u = fade(xf)
 	return lerp(g0,g1,u)
 
+func perlin_1d_octaves(x: float,frequency:float = 1,amplitude:float = 1, octaves: int = 4, 
+	persistence: float = 0.5) -> float:
+	var total = 0.0
+
+	for i in range(octaves):
+		total += perlin_1d(x * frequency) * amplitude
+		amplitude *= persistence    
+		frequency *= 2.0
+	return total
+
 func test_export():
-	var scale = 0.2
-	var path = "user://perlin_1D_numbers_" +  str(scale)   +".txt"
+	var path = "user://perlin_1D_numbers_.txt"
 	var file = FileAccess.open(path,FileAccess.WRITE)
 	if file == null:
 		push_error("Failed to open file: " + path)
 		return
-	for i in range(200):
-		var x = i * scale
-		var y = perlin_1d(x)
+	for i in range(50):
+		var x = i
+		var y = perlin_1d_octaves(x, 0.2, 1.5, 5, 0.5)
 		var y_norm = (y + 1)/2
 		var formated = ("%0.3f" % y_norm).replace(".",",")
 		file.store_line(formated)

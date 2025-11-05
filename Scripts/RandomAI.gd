@@ -6,7 +6,7 @@ func _init() -> void:
 
 func _ready():
 	pass
-	test_export()
+	#test_export()
 
 func uniform_float(min_val:float,max_val:float) -> float:
 	return lerp(min_val,max_val,randf())
