@@ -1,7 +1,7 @@
 class_name RandomAI extends Node
 
 var noise := FastNoiseLite.new()
-@export var noise_frequency:float = 0.4
+@export var noise_frequency:float = 0.01
 
 func _init() -> void:
 	noise.noise_type = FastNoiseLite.TYPE_PERLIN
@@ -38,8 +38,8 @@ func test_export():
 	if file == null:
 		push_error("Failed to open file: " + path)
 		return
-	for i in range(200):
-		var x = i
+	for i in range(1000):
+		var x = i * 2
 		var n = perlin1D(x)
 		print(n)
 		var formated = ("%0.3f" % n).replace(".",",")
