@@ -6,14 +6,10 @@ extends Node2D
 @export var spawn_area: Vector2 = Vector2(310,310)
 @onready var npc_container: Node2D = $%NPCsContainer
 @onready var random: RandomAI = $RandomAI
+@onready var perlin: PerlinNoise = $PerlinNoise
 
 func _ready() -> void:
-	if randi() % 2 == 1:
-		spawn_npc()
-	else:
-		spawn_npc_normal_dist()
-	#test_options()
-
+	spawn_npc()
 
 func spawn_npc():
 	for i in npc_count:
@@ -23,6 +19,7 @@ func spawn_npc():
 		npc.set_position(Vector2(x, y))
 		npc.name = "NPC" + str(i+1)
 		npc_container.add_child(npc)
+		npc.target_node = $%DraggableTarget
 
 func spawn_npc_normal_dist():
 	for i in npc_count:
