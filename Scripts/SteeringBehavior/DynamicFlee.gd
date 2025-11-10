@@ -3,23 +3,24 @@ class_name DynamicFlee extends SteeringBehaviors
 @export var panic_radius: float = 50.0
 const STOP_THRESHOLD = 15
 
-func calculate(target_position: Vector2) -> Vector2:
-	var direction = target_position - position
+func calculate() -> Vector2:
+	var direction = owner.target_node.global_position - owner.global_position
 	var distance = direction.length()
 	
 	# --- FLEE LOGIC ---
 	if distance < panic_radius:
-		var desired_velocity = -direction.normalized() * max_speed
-		var steering: Vector2 = desired_velocity - velocity
+		var desired_velocity = -direction.normalized() * owner.max_speed
+		var steering_force: Vector2 = desired_velocity - owner.velocity
 		
-		if steering.length() > max_acceleration:
-			steering = steering.normalized() * max_acceleration
-		return steering
+		if steering_force.length() > owner.max_acceleration:
+			steering_force = steering_force.normalized() * owner.max_acceleration
+		return steering_force
 	
 	# --- DECELERATION/BRAKING LOGIC ---
 	else:
-		if velocity.length() < STOP_THRESHOLD:
+		if owner.velocity.length() < STOP_THRESHOLD:
+			owner.stop()
 			return Vector2.ZERO
 		var desired_velocity = Vector2.ZERO
-		var steering: Vector2 = desired_velocity - velocity
-		return steering
+		var steering_force: Vector2 = desired_velocity - owner.velocity
+		return steering_force

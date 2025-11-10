@@ -5,13 +5,13 @@ class_name AIManager
 @export var target_node: Node2D 
 @export var max_speed: float = 300.0 
 @export var max_acceleration: float = 800.0
-# --- Proprieties ---
-var steering_acceleration: Vector2 = Vector2.ZERO
-# --- Behavior Management ---
+# --- Proprieties --- #
+var steering_force: Vector2 = Vector2.ZERO
+# --- Behavior Management --- #
 var Behavior = SteeringBehaviors.Behavior 
 var current_behavior = Behavior.NONE
 var active_behavior: SteeringBehaviors = null
-# ---Behaviors Instances---
+# ---Behaviors Instances--- #
 var seek_behavior: DynamicSeek = null
 var flee_behavior: DynamicFlee = null
 var arrive_behavior: Arrive = null
@@ -42,50 +42,47 @@ func _input(event: InputEvent) -> void:
 					current_behavior = Behavior.NONE
 
 func _physics_process(delta: float) -> void:
+	var next_behavior:SteeringBehaviors = null
+	
 	match current_behavior:
 		Behavior.DYN_SEEK:
-			_behavior_parameter_init(seek_behavior)
+			next_behavior = seek_behavior
 		Behavior.DYN_FLEE:
-			_behavior_parameter_init(flee_behavior)
-			_apply_stop_check()
+			next_behavior = flee_behavior
 		Behavior.ARRIVE:
-			_behavior_parameter_init(arrive_behavior)
-			_apply_stop_check()
+			next_behavior = arrive_behavior
 		Behavior.NONE:
-			_behavior_none()
+			behavior_none()
 			return
-	
+	_behavior_calculate(next_behavior)
 	_apply_movement(delta)
 
 func _behavior_init() -> void:
+	# --- SEEK ---#
 	seek_behavior = DynamicSeek.new()
-	_configure_behavior(seek_behavior)
+	seek_behavior.owner = self
+	# --- FLEE ---#
 	flee_behavior = DynamicFlee.new()
-	_configure_behavior(flee_behavior)
+	flee_behavior.owner = self
+	# --- ARRIVE ---#
 	arrive_behavior = Arrive.new()
-	_configure_behavior(arrive_behavior)
+	arrive_behavior.owner = self
 
-func _configure_behavior(behavior_instance: SteeringBehaviors) -> void:
-	behavior_instance.max_speed = max_speed
-	behavior_instance.max_acceleration = max_acceleration
+func _behavior_calculate(behavior_instance:SteeringBehaviors) -> void:
+	active_behavior = behavior_instance
+	steering_force = active_behavior.calculate()
 
-func _behavior_parameter_init(behaviot_instance:SteeringBehaviors) -> void:
-	active_behavior = behaviot_instance
-	active_behavior.position = global_position
-	active_behavior.velocity = velocity
-	steering_acceleration = active_behavior.calculate(target_node.global_position)
-
-func _apply_stop_check() -> void:
-	if steering_acceleration == Vector2.ZERO:
-				velocity = Vector2.ZERO
-
-func _behavior_none() -> void:
+func behavior_none() -> void:
 	active_behavior = null
+	velocity = Vector2.ZERO
+	update_animation(Vector2.ZERO, "idle")
+	
+func stop() -> void:
 	velocity = Vector2.ZERO
 	update_animation(Vector2.ZERO, "idle")
 
 func _apply_movement(delta:float) -> void:
-	velocity += steering_acceleration * delta
+	velocity += steering_force * delta
 	if velocity.length() > max_speed:
 		velocity = velocity.normalized() * max_speed
 	move_and_slide()

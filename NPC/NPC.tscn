@@ -339,6 +339,8 @@ animations = [{
 }]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_qm8nd"]
+radius = 6.6019816
+height = 20.960165
 
 [node name="NPC" type="CharacterBody2D"]
 script = ExtResource("1_qm8nd")
@@ -354,7 +356,6 @@ sprite_frames = SubResource("SpriteFrames_vh5go")
 animation = &"walk_up_left"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-visible = false
 position = Vector2(0, -14)
 scale = Vector2(0.6058787, 0.6679337)
 shape = SubResource("CapsuleShape2D_qm8nd")

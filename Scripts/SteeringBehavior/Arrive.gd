@@ -1,26 +1,27 @@
 class_name Arrive extends SteeringBehaviors
 
-@export var slow_radius: float = 200.0 
-@export var target_radius: float = 30.0 
+@export var break_radius: float = 200.0 
+@export var stop_radius: float = 30.0 
+var target_speed: float
 
-func calculate(target_position: Vector2) -> Vector2:
-	var direction = target_position - position
+func calculate() -> Vector2:
+	var direction = owner.target_node.global_position - owner.global_position
 	var distance = direction.length()
 	
-	if distance < target_radius:
+	if distance < stop_radius:
+		owner.stop()
 		return Vector2.ZERO
 	
-	var target_speed: float
-	
-	if distance > slow_radius:
-		target_speed = max_speed
-	else:
-		target_speed = max_speed * (distance / slow_radius)
 
+	if distance > break_radius:
+		target_speed = owner.max_speed
+	else:
+		target_speed = owner.max_speed * (distance / break_radius)
+	
 	var desired_velocity = direction.normalized() * target_speed
-	var steering: Vector2 = desired_velocity - velocity
+	var steering_force: Vector2 = desired_velocity - owner.velocity
 	
-	if steering.length() > max_acceleration:
-		steering = steering.normalized() * max_acceleration
+	if steering_force.length() > owner.max_acceleration:
+		steering_force = steering_force.normalized() * owner.max_acceleration
 	
-	return steering
+	return steering_force
