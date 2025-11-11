@@ -17,7 +17,7 @@ func spawn_npc():
 		var x = random.uniform_float(-spawn_area.x/2,spawn_area.x/2)
 		var y = random.uniform_float(-spawn_area.y/2,spawn_area.y/2)
 		npc.set_position(Vector2(x, y))
-		npc.name = "NPC" + str(i+1)
+		npc.name = "NPC_" + str(i+1)
 		npc_container.add_child(npc)
 		npc.target_node = $%DraggableTarget
 

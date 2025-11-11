@@ -1,4 +1,4 @@
-class_name Arrive extends SteeringBehaviors
+class_name DynamicArrive extends SteeringBehaviors
 
 @export var break_radius: float = 200.0 
 @export var stop_radius: float = 30.0 

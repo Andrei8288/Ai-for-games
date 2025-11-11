@@ -6,7 +6,8 @@ enum Behavior{
 	NONE,
 	DYN_SEEK,
 	DYN_FLEE,
-	ARRIVE
+	DYN_ARRIVE,
+	DYN_FLOCK
 }
 
 func calculate() -> Vector2:

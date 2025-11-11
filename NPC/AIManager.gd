@@ -7,6 +7,8 @@ class_name AIManager
 @export var max_acceleration: float = 800.0
 # --- Proprieties --- #
 var steering_force: Vector2 = Vector2.ZERO
+var buddies: Array[CharacterBody2D] = []
+var flocking_active:bool = false
 # --- Behavior Management --- #
 var Behavior = SteeringBehaviors.Behavior 
 var current_behavior = Behavior.NONE
@@ -14,13 +16,17 @@ var active_behavior: SteeringBehaviors = null
 # ---Behaviors Instances--- #
 var seek_behavior: DynamicSeek = null
 var flee_behavior: DynamicFlee = null
-var arrive_behavior: Arrive = null
+var arrive_behavior: DynamicArrive = null
+var flocking_behavior: DynamicFlocking = null
+var behavior_blender: BehaviorBlender = null
 
 
 func _ready() -> void:
 	_behavior_init()
 	velocity = Vector2.ZERO
-
+	var container = get_parent()
+	for child in container.get_children():
+		buddies.append(child)
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed:
@@ -36,24 +42,39 @@ func _input(event: InputEvent) -> void:
 				else:
 					current_behavior = Behavior.NONE
 			KEY_A:
-				if current_behavior != Behavior.ARRIVE:
-					current_behavior = Behavior.ARRIVE
+				if current_behavior != Behavior.DYN_ARRIVE:
+					current_behavior = Behavior.DYN_ARRIVE
 				else:
 					current_behavior = Behavior.NONE
+			KEY_B:
+				if current_behavior != Behavior.DYN_FLOCK:
+					current_behavior = Behavior.DYN_FLOCK
+				else:
+					current_behavior = Behavior.NONE
+			KEY_1:
+				flocking_active = !flocking_active
 
 func _physics_process(delta: float) -> void:
+	var goal_force = Vector2.ZERO
+	var flocking_force = Vector2.ZERO
 	var next_behavior:SteeringBehaviors = null
 	
 	match current_behavior:
 		Behavior.DYN_SEEK:
-			next_behavior = seek_behavior
+			goal_force = seek_behavior.calculate()
 		Behavior.DYN_FLEE:
-			next_behavior = flee_behavior
-		Behavior.ARRIVE:
-			next_behavior = arrive_behavior
+			goal_force = flee_behavior.calculate()
+		Behavior.DYN_ARRIVE:
+			goal_force = arrive_behavior.calculate()
+		Behavior.DYN_FLOCK:
+			pass
 		Behavior.NONE:
 			behavior_none()
 			return
+	
+	if flocking_active and flocking_behavior:
+		flocking_force = flocking_behavior.calculate()
+	
 	_behavior_calculate(next_behavior)
 	_apply_movement(delta)
 
@@ -65,8 +86,11 @@ func _behavior_init() -> void:
 	flee_behavior = DynamicFlee.new()
 	flee_behavior.owner = self
 	# --- ARRIVE ---#
-	arrive_behavior = Arrive.new()
+	arrive_behavior = DynamicArrive.new()
 	arrive_behavior.owner = self
+	# --- FLOCK ---#
+	flocking_behavior = DynamicFlocking.new()
+	flocking_behavior.owner = self
 
 func _behavior_calculate(behavior_instance:SteeringBehaviors) -> void:
 	active_behavior = behavior_instance
