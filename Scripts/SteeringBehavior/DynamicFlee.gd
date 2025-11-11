@@ -1,7 +1,7 @@
 class_name DynamicFlee extends SteeringBehaviors
 
-@export var panic_radius: float = 50.0
-const STOP_THRESHOLD = 15
+@export var panic_radius: float = 100.0
+const STOP_THRESHOLD = 20
 
 func calculate() -> Vector2:
 	var direction = owner.target_node.global_position - owner.global_position
