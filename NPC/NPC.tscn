@@ -343,6 +343,7 @@ radius = 6.6019816
 height = 20.960165
 
 [node name="NPC" type="CharacterBody2D"]
+collision_mask = 2
 script = ExtResource("1_qm8nd")
 
 [node name="OptionTextOutput" type="Node" parent="."]

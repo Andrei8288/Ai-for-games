@@ -8,6 +8,7 @@
 [node name="manager" type="Node2D"]
 script = ExtResource("1_voqfu")
 npc_scene = ExtResource("2_wtnv7")
+npc_count = 2
 
 [node name="RandomAI" type="Node" parent="."]
 script = ExtResource("3_plmk5")
