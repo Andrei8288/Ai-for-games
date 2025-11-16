@@ -55,17 +55,15 @@ func _input(event: InputEvent) -> void:
 				flocking_active = !flocking_active
 
 func _physics_process(delta: float) -> void:
-	var goal_force = Vector2.ZERO
-	var flocking_force = Vector2.ZERO
-	var next_behavior:SteeringBehaviors = null
+	var _flocking_force = Vector2.ZERO
 	
 	match current_behavior:
 		Behavior.DYN_SEEK:
-			goal_force = seek_behavior.calculate()
+			steering_force = seek_behavior.calculate()
 		Behavior.DYN_FLEE:
-			goal_force = flee_behavior.calculate()
+			steering_force = flee_behavior.calculate()
 		Behavior.DYN_ARRIVE:
-			goal_force = arrive_behavior.calculate()
+			steering_force = arrive_behavior.calculate()
 		Behavior.DYN_FLOCK:
 			pass
 		Behavior.NONE:
@@ -73,9 +71,9 @@ func _physics_process(delta: float) -> void:
 			return
 	
 	if flocking_active and flocking_behavior:
-		flocking_force = flocking_behavior.calculate()
+		_flocking_force = flocking_behavior.calculate()
 	
-	_behavior_calculate(next_behavior)
+	#_behavior_calculate(next_behavior)
 	_apply_movement(delta)
 
 func _behavior_init() -> void:
