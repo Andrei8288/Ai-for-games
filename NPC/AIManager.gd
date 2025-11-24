@@ -1,95 +1,82 @@
 extends CharacterBody2D
 class_name AIManager
 
-# --- Exported Properties ---
-@export var target_node: Node2D 
-@export var max_speed: float = 300.0 
-@export var max_acceleration: float = 800.0
-# --- Proprieties --- #
-var steering_force: Vector2 = Vector2.ZERO
-# --- Behavior Management --- #
-var Behavior = SteeringBehaviors.Behavior 
-var current_behavior = Behavior.NONE
-var active_behavior: SteeringBehaviors = null
-# ---Behaviors Instances--- #
-var seek_behavior: DynamicSeek = null
-var flee_behavior: DynamicFlee = null
-var arrive_behavior: Arrive = null
+@export var target_node: Node2D
+@export var max_speed: float = 100.0
+@export var max_acceleration: float = 170.0
 
+const Behavior = SteeringBehaviors.Behavior
+var current_behavior: Behavior = Behavior.NONE
+
+var seek_behavior: DynamicSeek
+var flee_behavior: DynamicFlee
+var arrive_behavior: DynamicArrive
+var flocking_behavior: DynamicFlocking
+
+var steering_force: Vector2 = Vector2.ZERO
+var buddies: Array = []
 
 func _ready() -> void:
-	_behavior_init()
-	velocity = Vector2.ZERO
+	add_to_group("boids")
+	_init_behaviors()
+	velocity = Vector2(randf_range(-40, 40), randf_range(-40, 40))
 
-
-func _input(event: InputEvent) -> void:
-	if event is InputEventKey and event.pressed:
-		match event.keycode:
+func on_behavior_input(keycode: int) -> void:
+		match keycode:
+			KEY_B:
+				current_behavior = Behavior.DYN_FLOCK if current_behavior != Behavior.DYN_FLOCK else Behavior.NONE
 			KEY_S:
-				if current_behavior != Behavior.DYN_SEEK:
-					current_behavior = Behavior.DYN_SEEK
-				else:
-					current_behavior = Behavior.NONE
+				current_behavior = Behavior.DYN_SEEK if current_behavior != Behavior.DYN_SEEK else Behavior.NONE
 			KEY_F:
-				if current_behavior != Behavior.DYN_FLEE:
-					current_behavior = Behavior.DYN_FLEE
-				else:
-					current_behavior = Behavior.NONE
+				current_behavior = Behavior.DYN_FLEE if current_behavior != Behavior.DYN_FLEE else Behavior.NONE
 			KEY_A:
-				if current_behavior != Behavior.ARRIVE:
-					current_behavior = Behavior.ARRIVE
-				else:
-					current_behavior = Behavior.NONE
+				current_behavior = Behavior.DYN_ARRIVE if current_behavior != Behavior.DYN_ARRIVE else Behavior.NONE
 
-func _physics_process(delta: float) -> void:
-	var next_behavior:SteeringBehaviors = null
-	
+func compute_steering() -> void:
 	match current_behavior:
+		Behavior.DYN_FLOCK:
+			steering_force = flocking_behavior.calculate()
 		Behavior.DYN_SEEK:
-			next_behavior = seek_behavior
+			steering_force = seek_behavior.calculate()
 		Behavior.DYN_FLEE:
-			next_behavior = flee_behavior
-		Behavior.ARRIVE:
-			next_behavior = arrive_behavior
+			steering_force = flee_behavior.calculate()
+		Behavior.DYN_ARRIVE:
+			steering_force = arrive_behavior.calculate()
 		Behavior.NONE:
-			behavior_none()
-			return
-	_behavior_calculate(next_behavior)
-	_apply_movement(delta)
+			steering_force = Vector2.ZERO
+			stop()
 
-func _behavior_init() -> void:
-	# --- SEEK ---#
+func _init_behaviors() -> void:
 	seek_behavior = DynamicSeek.new()
 	seek_behavior.owner = self
-	# --- FLEE ---#
 	flee_behavior = DynamicFlee.new()
 	flee_behavior.owner = self
-	# --- ARRIVE ---#
-	arrive_behavior = Arrive.new()
+	arrive_behavior = DynamicArrive.new()
 	arrive_behavior.owner = self
+	flocking_behavior = DynamicFlocking.new()
+	flocking_behavior.owner = self
 
-func _behavior_calculate(behavior_instance:SteeringBehaviors) -> void:
-	active_behavior = behavior_instance
-	steering_force = active_behavior.calculate()
-
-func behavior_none() -> void:
-	active_behavior = null
-	velocity = Vector2.ZERO
-	update_animation(Vector2.ZERO, "idle")
-	
 func stop() -> void:
 	velocity = Vector2.ZERO
+	steering_force = Vector2.ZERO
 	update_animation(Vector2.ZERO, "idle")
 
-func _apply_movement(delta:float) -> void:
+func apply_movement(delta: float) -> void:
 	velocity += steering_force * delta
+	
+	if velocity.length() < 5.0:
+		velocity = velocity.normalized() * 5.0
+	
 	if velocity.length() > max_speed:
 		velocity = velocity.normalized() * max_speed
+	
 	move_and_slide()
-	if velocity.length_squared() > 0:
+	
+	if velocity.length_squared() > 0.01:
 		update_animation(velocity, "walk")
 	else:
 		update_animation(Vector2.ZERO, "idle")
+
 
 func update_animation(m_velocity: Vector2, state: String = "idle") -> void:
 	var angle = fmod(450.0 - rad_to_deg(atan2(m_velocity.y, m_velocity.x)), 360.0)

@@ -199,7 +199,7 @@ tile_set = SubResource("TileSet_8gbba")
 zoom = Vector2(1.725, 1.71)
 
 [node name="Manager" parent="." instance=ExtResource("2_bo1nx")]
-npc_count = 1
+npc_count = 7
 spawn_area = Vector2(660, 360)
 
 [node name="NPCsContainer" type="Node2D" parent="."]
@@ -214,6 +214,7 @@ scale = Vector2(0.13957831, 0.13957831)
 [node name="Top" type="StaticBody2D" parent="MapBounds"]
 position = Vector2(0, -381)
 rotation = 3.1415927
+collision_layer = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="MapBounds/Top"]
 position = Vector2(0, -191)
@@ -221,11 +222,13 @@ shape = SubResource("WorldBoundaryShape2D_8gbba")
 
 [node name="Bottom" type="StaticBody2D" parent="MapBounds"]
 position = Vector2(0, 191)
+collision_layer = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="MapBounds/Bottom"]
 shape = SubResource("WorldBoundaryShape2D_jjvhh")
 
 [node name="Left" type="StaticBody2D" parent="MapBounds"]
+collision_layer = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="MapBounds/Left"]
 position = Vector2(-335, 0)
@@ -233,6 +236,7 @@ rotation = 1.5707964
 shape = SubResource("WorldBoundaryShape2D_kry3j")
 
 [node name="Right" type="StaticBody2D" parent="MapBounds"]
+collision_layer = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="MapBounds/Right"]
 position = Vector2(334, 0)
