@@ -2,6 +2,7 @@
 extends Node2D
 class_name NavGraph
 
+@onready var label_font := preload("res://Roboto.ttf")
 @export var edge_list: Array[PackedInt32Array] = []:
 	set(value):
 		edge_list = value
@@ -98,20 +99,22 @@ func _reconstruct_path(came_from: Dictionary, current: int) -> Array[int]:
 	
 	return total_path
 
-
 func get_node_position(id: int) -> Vector2:
 	return nodes[id]
-
 
 func _draw() -> void:
 	for pos in nodes:
 		draw_circle(pos, 6.0, Color.RED)
-
 	# draw edges
 	for a in edges.keys():
 		for b in edges[a]:
 			if b > a:
 				draw_line(nodes[a], nodes[b], Color.WHITE, 2.0)
+	for i in range(nodes.size()):
+		var pos = nodes[i]
+		draw_circle(pos, 6.0, Color.RED)
+		draw_string(label_font, pos + Vector2(10, -10), str(i), HORIZONTAL_ALIGNMENT_LEFT, -1, 16, Color.WHITE)
+
 
 class PriorityQueue:
 	var items: Array = []

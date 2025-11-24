@@ -37,13 +37,10 @@ func spawn_npc():
 		var npc = npc_scene.instantiate()
 		var x = random.uniform_float(-spawn_area.x/2, spawn_area.x/2)
 		var y = random.uniform_float(-spawn_area.y/2, spawn_area.y/2)
-
 		npc.position = Vector2(x, y)
 		npc.name = "NPC_" + str(i+1)
 		npc_container.add_child(npc)
-
 		npc.target_node = $%DraggableTarget
-
 		boids.append(npc) 
 
 func spawn_npc_normal_dist():
