@@ -1,0 +1,18 @@
+[gd_scene load_steps=5 format=3 uid="uid://bmvrs2mvtbcdj"]
+
+[ext_resource type="Script" uid="uid://f1jtv0waheum" path="res://Scripts/Other/GraphManager.gd" id="1_y1pj2"]
+[ext_resource type="PackedScene" uid="uid://mpkpoq68rb0c" path="res://NPC/NPC.tscn" id="2_jsdyq"]
+[ext_resource type="Script" uid="uid://xys4ct3umfud" path="res://Scripts/Other/RandomAI.gd" id="3_mcr1l"]
+[ext_resource type="Script" uid="uid://3opr55ib4xv8" path="res://Scripts/Other/PerlinNoise.gd" id="4_h4q2h"]
+
+[node name="GraphManager" type="Node2D"]
+script = ExtResource("1_y1pj2")
+npc_scene = ExtResource("2_jsdyq")
+
+[node name="RandomAI" type="Node" parent="."]
+script = ExtResource("3_mcr1l")
+metadata/_custom_type_script = "uid://xys4ct3umfud"
+
+[node name="PerlinNoise" type="Node" parent="."]
+script = ExtResource("4_h4q2h")
+metadata/_custom_type_script = "uid://3opr55ib4xv8"

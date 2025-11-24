@@ -1,7 +1,7 @@
-extends Node2D
+class_name Manager extends Node2D
 
 @export var npc_scene: PackedScene
-@export var npc_count: int
+@export var npc_count: int = 1
 @export var spawn_area: Vector2 = Vector2(310,310)
 
 @onready var npc_container: Node2D = $%NPCsContainer
