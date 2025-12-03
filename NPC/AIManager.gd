@@ -18,6 +18,10 @@ var flocking_behavior: DynamicFlocking
 var grappling_behavior: DynamicGrapplingHook
 #endregion
 
+#region State
+var machine: StateMachine
+#endregion
+
 var steering_force: Vector2 = Vector2.ZERO
 var buddies: Array = []
 
