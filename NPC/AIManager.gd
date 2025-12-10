@@ -1,39 +1,46 @@
 extends CharacterBody2D
 class_name AIManager
 
-#region exported
+#region Exported
 @export var target_node: Node2D
 @export var max_speed: float = 100.0
 @export var max_acceleration: float = 170.0
 #endregion
 
-#region behaviors
+#region Behaviors
 const Behavior = SteeringBehaviors.Behavior
 var current_behavior: Behavior = Behavior.NONE
-
+var flocking_enabled:bool = false
 var seek_behavior: DynamicSeek
 var flee_behavior: DynamicFlee
+var wander_behavior: DynamicWander
 var arrive_behavior: DynamicArrive
 var flocking_behavior: DynamicFlocking
 var grappling_behavior: DynamicGrapplingHook
-#endregion
-
-#region State
-var machine: StateMachine
-#endregion
-
 var steering_force: Vector2 = Vector2.ZERO
 var buddies: Array = []
+#endregion
 
+#region Graph
 var nav_graph: NavGraph = null
 var nav_path: Array[int] = []
+#endregion
+
+#region DecisionTree
+var dt_context: DecisionTree.Context = null
+var dt_root = null
+#endregion
+
 
 
 func _ready() -> void:
 	add_to_group("boids")
 	_init_behaviors()
 	velocity = Vector2(randf_range(-40, 40), randf_range(-40, 40))
-
+	
+	var tree = DecisionTree.build_tree(self)
+	dt_context = tree["context"]
+	dt_root = tree["root"]
 
 func _init_behaviors() -> void:
 	seek_behavior = DynamicSeek.new()
@@ -51,11 +58,13 @@ func _init_behaviors() -> void:
 	grappling_behavior = DynamicGrapplingHook.new()
 	grappling_behavior.owner = self
 
+	wander_behavior = DynamicWander.new()
+	wander_behavior.owner = self
 
 func on_behavior_input(keycode: int) -> void:
 	match keycode:
 		KEY_B:
-			current_behavior = Behavior.DYN_FLOCK if current_behavior != Behavior.DYN_FLOCK else Behavior.NONE
+			flocking_enabled = !flocking_enabled
 		KEY_S:
 			current_behavior = Behavior.DYN_SEEK if current_behavior != Behavior.DYN_SEEK else Behavior.NONE
 		KEY_F:
@@ -64,12 +73,11 @@ func on_behavior_input(keycode: int) -> void:
 			current_behavior = Behavior.DYN_ARRIVE if current_behavior != Behavior.DYN_ARRIVE else Behavior.NONE
 		KEY_G:
 			current_behavior = Behavior.DYN_GRAPPLE if current_behavior != Behavior.DYN_GRAPPLE else Behavior.NONE
-
+		KEY_W:
+			current_behavior = Behavior.DYN_WANDER if current_behavior != Behavior.DYN_WANDER else Behavior.NONE
 
 func compute_steering() -> void:
 	match current_behavior:
-		Behavior.DYN_FLOCK:
-			steering_force = flocking_behavior.calculate()
 		Behavior.DYN_SEEK:
 			steering_force = seek_behavior.calculate()
 		Behavior.DYN_FLEE:
@@ -78,10 +86,14 @@ func compute_steering() -> void:
 			steering_force = arrive_behavior.calculate()
 		Behavior.DYN_GRAPPLE:
 			steering_force = grappling_behavior.calculate()
+		Behavior.DYN_WANDER:
+			steering_force = wander_behavior.calculate()
 		Behavior.NONE:
 			steering_force = Vector2.ZERO
 			stop()
-
+	
+	if flocking_enabled:
+		steering_force += flocking_behavior.calculate()
 
 func apply_movement(delta):
 	if current_behavior == Behavior.DYN_GRAPPLE:
@@ -97,14 +109,12 @@ func apply_movement(delta):
 	else:
 		update_animation(Vector2.ZERO, "idle")
 
-
-
 func stop() -> void:
 	velocity = Vector2.ZERO
 	steering_force = Vector2.ZERO
 	update_animation(Vector2.ZERO, "idle")
 
-
+#region Helpers
 func set_nav_data(graph: NavGraph, path: Array[int]) -> void:
 	nav_graph = graph
 	nav_path = path
@@ -112,6 +122,23 @@ func set_nav_data(graph: NavGraph, path: Array[int]) -> void:
 	grappling_behavior.path = nav_path
 	grappling_behavior.current_index = 0
 
+func set_base_behavior(behavior: Behavior) -> void:
+	current_behavior = behavior
+
+func enable_flocking() -> void:
+	flocking_enabled = true
+
+func disable_flocking() -> void:
+	flocking_enabled = false
+
+func update_ai(_delta: float) -> void:
+	if dt_context == null or dt_root == null:
+		return
+
+	dt_context.update()
+	dt_root.evaluate(dt_context)
+
+#endregion
 
 func update_animation(m_velocity: Vector2, state: String = "idle") -> void:
 	var angle = fmod(450.0 - rad_to_deg(atan2(m_velocity.y, m_velocity.x)), 360.0)

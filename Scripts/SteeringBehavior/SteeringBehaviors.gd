@@ -14,8 +14,8 @@ enum Behavior {
 	DYN_SEEK,
 	DYN_FLEE,
 	DYN_ARRIVE,
-	DYN_FLOCK,
-	DYN_GRAPPLE      # new
+	DYN_GRAPPLE,
+	DYN_WANDER
 }
 
 func _on_owner_changed() -> void:

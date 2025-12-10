@@ -26,6 +26,7 @@ func _physics_process(delta: float) -> void:
 	
 	for b in boids:
 		if b:
+			b.update_ai(delta)
 			b.compute_steering()
 	 
 	for b in boids:

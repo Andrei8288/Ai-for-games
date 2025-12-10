@@ -1,9 +1,9 @@
 class_name DynamicFlocking
 extends SteeringBehaviors
 
-@export var cohesion_weight: float = 0.8
-@export var separation_weight: float = 1.4
-@export var alignment_weight: float = 0.8
+@export var cohesion_weight: float = 1.2
+@export var separation_weight: float = 1.3
+@export var alignment_weight: float = 0.9
 
 var cohesion_behavior := CohesionBehavior.new()
 var alignment_behavior := AlignmentBehavior.new()
